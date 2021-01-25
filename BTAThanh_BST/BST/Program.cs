@@ -35,8 +35,7 @@ namespace BST
             Console.Write("Do sau cua cay: " + binarySearchTree.depth() + '\n');
 
             Console.WriteLine("Chuyen cay sang mang");
-            List<int> a = new List<int>();
-            binarySearchTree.chuyenMang(a);
+            List<int> a = binarySearchTree.chuyenMang();
 
             foreach (int gt in a)
                 Console.Write(gt + " ");
@@ -142,9 +141,13 @@ class BinarySearchTree
         doChuyenMang(node.right, a);
     }
 
-    public void chuyenMang(List<int> a)
+    public List<int> chuyenMang()
     {
+        List<int> a = new List<int>();
+
         doChuyenMang(root, a);
+
+        return a;
     }
 
     public bool search(int val)
