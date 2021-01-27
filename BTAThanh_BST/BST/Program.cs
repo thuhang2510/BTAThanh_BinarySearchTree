@@ -15,19 +15,23 @@ namespace BST
             binarySearchTree.insert(5);
             binarySearchTree.insertReturn(6);
             binarySearchTree.insert(-1);
+            binarySearchTree.insertReturn(7);
+            binarySearchTree.insert(-2);
             binarySearchTree.insert(3);
-            binarySearchTree.insertReturn(8);
             binarySearchTree.insert(4);
-            binarySearchTree.insert(7);
+            binarySearchTree.insert(1);
+            binarySearchTree.insert(2);
+            binarySearchTree.insert(0);
+
 
             Console.WriteLine("Cay sau khi chen");
             Console.WriteLine(binarySearchTree.ToString());
 
             Console.WriteLine("Tim phan tu");
             int pt = 0;
-            bool ktra = binarySearchTree.search(pt);
+            Node ktra = binarySearchTree.search(pt);
 
-            if (ktra == true)
+            if (ktra != null)
                 Console.WriteLine("pt " + pt + " co ton tai trong cay");
             else
                 Console.WriteLine("pt " + pt + " khong ton tai trong cay");
@@ -41,7 +45,7 @@ namespace BST
                 Console.Write(gt + " ");
 
             Console.WriteLine();
-            binarySearchTree.remove(-1);
+            binarySearchTree.remove(5);
             Console.WriteLine("Cay sau khi xoa");
             Console.WriteLine(binarySearchTree.ToString());
         }
@@ -82,8 +86,6 @@ class BinarySearchTree
 
     private void doInsert(Node node, int value)
     {
-        Node newNode = new Node(value);
-
         Node q = node;
 
         while (q != null)
@@ -98,14 +100,14 @@ class BinarySearchTree
                 q = q.right;
 
                 if (q == null)
-                    nodeTam.right = newNode;
+                    nodeTam.right = new Node(value);
             }
             else
             {
                 q = q.left;
 
                 if (q == null)
-                    nodeTam.left = newNode;
+                    nodeTam.left = new Node(value);
             }
         }
     }
@@ -150,23 +152,32 @@ class BinarySearchTree
         return a;
     }
 
-    public bool search(int val)
+    public Node search(int val)
     {
         return doSearch(root, val);
     }
 
-    private bool doSearch(Node node, int value)
+    private Node preNode;
+
+    private Node doSearch(Node node, int value)
     {
         if (node == null)
-            return false;
+            return null;
 
         if (node.key == value)
-            return true;
+            return node;
 
         if (node.key > value)
+        {
+            preNode = node;
             return doSearch(node.left, value);
+        }
         else
+        {
+            preNode = node;
             return doSearch(node.right, value);
+        }
+            
     }
 
     private int tinhDoSau(Node node)
@@ -201,42 +212,79 @@ class BinarySearchTree
         return s;
     }
 
-    int minValueRight(Node node)
+    Node minValueLeft(Node node)
     {
-        int minv = node.key;
         while (node.left != null)
         {
-            minv = node.left.key;
+            preNode = node;
             node = node.left;
-        }
-        return minv;
-    }
-
-    Node doRemove(Node node, int key)
-    {
-        if (node == null)
-            return node;
-
-        if (key < node.key)
-            node.left = doRemove(node.left, key);
-        else if (key > node.key)
-            node.right = doRemove(node.right, key);
-        else
-        {
-            if (node.left == null)
-                return node.right;
-            else if (node.right == null)
-                return node.left;
-
-            node.key = minValueRight(node.right);
-            node.right = doRemove(node.right, node.key);
         }
 
         return node;
     }
 
+    private void doRemove(Node node, int key)
+    {
+        Node p = search(key);
+
+        if (p == null)
+            return;
+
+        if (p.left == null && p.right == null)
+        {
+            if (p == root)
+            {
+                root = null;
+                return;
+            }
+
+            if (preNode.left == p)
+                preNode.left = null;
+            else
+                preNode.right = null;
+        }
+        else if (p.left == null)
+        {
+            if (p == root)
+            {
+                root = root.right;
+                return;
+            }
+
+            preNode.right = p.right;
+        }
+        else if (p.right == null)
+        {
+            if (p == root)
+            {
+                root = root.left;
+                return;
+            }
+
+            preNode.left = p.left;
+        }
+        else
+        {
+            if (p.right.left == null)
+            {
+                p.key = p.right.key;
+                p.right = p.right.right;
+            }
+            else
+            {
+                Node succ = p.right;
+                Node succPre = p;
+
+                succ = minValueLeft(succ);
+
+                p.key = succ.key;
+                preNode.left = succ.right;
+            }
+        }
+    }
+
     public void remove(int key)
     {
-        root = doRemove(root, key);
+        doRemove(root, key);
     }
 }
