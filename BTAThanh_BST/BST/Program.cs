@@ -273,7 +273,6 @@ class BinarySearchTree
             else
             {
                 Node succ = p.right;
-                Node succPre = p;
 
                 succ = minValueLeft(succ);
 
